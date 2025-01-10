@@ -1,4 +1,4 @@
-# [UniLearn: Enhancing Dynamic Facial Expression Recognition through Unified Pre-Training and Fine-Tuning on Images and Videos](https://arxiv.org/pdf/2409.06154)
+# [Static for Dynamic: Towards a Deeper Understanding of Dynamic Facial Expressions Using Static Expression Data](https://arxiv.org/pdf/2409.06154)
 
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/unilearn-enhancing-dynamic-facial-expression/dynamic-facial-expression-recognition-on-dfew)](https://paperswithcode.com/sota/dynamic-facial-expression-recognition-on-dfew?p=unilearn-enhancing-dynamic-facial-expression)
