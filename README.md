@@ -3,6 +3,8 @@ The code will be released once our paper has been accepted.
 
 ## News
 
+[2025.9.15] The paper is accepted by IEEE Transactions on Affective Computing.
+
 [2024.9.5] Code and pre-trained models will be released here.
 
 ## Results
