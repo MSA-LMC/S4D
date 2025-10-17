@@ -1,0 +1,5 @@
+*.npy
+*.zip
+__pycache__
+*.txt
+*.pyc

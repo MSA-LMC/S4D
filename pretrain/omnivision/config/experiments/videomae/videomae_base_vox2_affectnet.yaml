@@ -1,0 +1,209 @@
+# @package _global_
+# Reproducing OmniMAE w/ ViT-Base trunk
+# OMP_NUM_THREADS=1 HYDRA_FULL_ERROR=1 python train_app_submitit.py +experiments=videomae/videomae_base_vox2_affectnet
+
+output_subdir: videomae_pretrain_base_dim768_patch16_160_frame_16x4_random_mask_ratio_I0.9V0.95_e100_160x160_voxceleb2_affectnet
+
+hydra:
+  run:
+    dir: ./logs/pretrain/voxceleb2+affectnet
+  output_subdir: ${output_subdir}/.hydra/${now:%Y-%m-%d-%H-%M-%S}
+
+defaults:
+  - /experiments/base.yaml
+  - _self_
+
+base_lr: 1.6e-3
+base_batchsize_per_replica: 192
+total_batch_size: ${times:${base_batchsize_per_replica},${launcher.gpus_per_node}}
+lr: ${divide:${times:${base_lr}, ${total_batch_size}},512} # 8e-4 in orig config
+
+submitit: 
+  use_cluster: false
+
+launcher:
+  gpus_per_node: 2
+  num_nodes: 1
+  experiment_log_dir: ${output_subdir}
+  
+trainer:
+  _target_: omnivision.trainer.videomae_trainer.VideoMAETrainer
+  checkpoint:
+    save_dir: ${launcher.experiment_log_dir}/checkpoints
+    save_freq: 10 # 0 only last checkpoint is saved.
+    resume: ${launcher.experiment_log_dir}/checkpoints # /data1/user/project/omnivore/omnivision/outputs/2024-02-29/11-45-58/logs/checkpoints
+  max_epochs: 100
+
+  distributed:
+    comms_dtype: float16 # NULL, float16, bfloat16
+
+  data:
+    train:
+      _target_: omnivision.data.concat_dataset.ConcatDataset
+      max_steps: sum
+      repeat_factors:
+        - 1.0
+        - ${divide:1,${trainer.data.train.datasets.1.dataset.transforms.0.transforms.0.base_transform.num_times}}
+      datasets:
+      - _target_: omnivision.data.torch_dataset.TorchDataset
+        dataset:
+          _target_: omnivision.data.path_dataset.ImagePathDataset
+          data_path: /dev/shm/datasets/affectnet/Manually_Annotated_Images
+          path_file_list:
+            - ${affectnet_train_imgs_path}
+          label_file_list:
+            - ${affectnet_train_labels_path}
+          new_prefix: ${affectnet_prefix}
+          transforms:
+            - _target_: torchvision.transforms.Compose
+              transforms:
+                - _target_: omnivision.data.transforms.transform_wrappers.VisionTransform
+                  base_transform:
+                    _target_: torchvision.transforms.RandomResizedCrop
+                    size: 160
+                    scale: [0.2, 1.0]
+                    interpolation: 3
+                - _target_: omnivision.data.transforms.transform_wrappers.VisionTransform
+                  base_transform:
+                    _target_: torchvision.transforms.RandomHorizontalFlip
+                    p: 0.5
+                - _target_: omnivision.data.transforms.transform_wrappers.VisionTransform
+                  base_transform:
+                    _target_: torchvision.transforms.ToTensor
+                - _target_: omnivision.data.transforms.transform_wrappers.VisionTransform
+                  base_transform:
+                    _target_: torchvision.transforms.Normalize
+                    mean: [0.485, 0.456, 0.406]
+                    std: [0.229, 0.224, 0.225]
+            - _target_: omnivision.data.transforms.transform_wrappers.MaskingTransform
+              masking_object:
+                _target_: omnivision.data.transforms.mask_image_modeling.MaskImageModeling
+                pred_ratio: 0.9
+                pred_ratio_var: 0.0
+                pred_shape:
+                  _target_: omnivision.data.transforms.mask_image_modeling.TubeMasking
+                  frame_masking:
+                    _target_: omnivision.data.transforms.mask_image_modeling.RandMasking
+                patch_size: [2,16,16]
+        shuffle: True
+        batch_size: ${base_batchsize_per_replica}
+        num_workers: 10
+        pin_memory: True
+        drop_last: False
+        collate_fn:
+          _target_: omnivision.data.api.DefaultOmnivoreCollator
+          output_key: affectnet
+        worker_init_fn: NULL
+      - _target_: omnivision.data.torch_dataset.TorchDataset
+        dataset:
+          _target_: omnivision.data.path_dataset.VideoPathDatasetDecode
+          data_path: /dev/shm/dev
+          dataset_type: voxceleb2
+          path_file_list:
+            - ${voxceleb2_train_vids_path}
+          label_file_list:
+            - ${voxceleb2_train_labels_path}
+          new_prefix: ${voxceleb2_prefix}
+          new_length: 16
+          new_step: 4
+          decoder: decord
+          normalize_to_0_1: True
+          transforms:
+            - _target_: torchvision.transforms.Compose
+              transforms:
+                - _target_: omnivision.data.transforms.transform_wrappers.VisionTransform
+                  base_transform:
+                    _target_: omnivision.data.transforms.pytorchvideo.Replicate
+                    num_times: 4
+                - _target_: omnivision.data.transforms.transform_wrappers.VisionTransform
+                  base_transform:
+                    _target_: omnivision.data.transforms.transform_wrappers.ListTransform
+                    base_transform:
+                      _target_: torchvision.transforms.Compose
+                      transforms:
+                        - _target_: pytorchvideo.transforms.ShortSideScale
+                          size: 192
+                        - _target_: torchvision.transforms.RandomResizedCrop
+                          size: 160
+                        - _target_:  torchvision.transforms._transforms_video.NormalizeVideo
+                          mean: [0.485, 0.456, 0.406]
+                          std: [0.229, 0.224, 0.225]
+            - _target_: omnivision.data.transforms.transform_wrappers.SingleFieldListToSampleList
+              field: vision
+            - _target_: omnivision.data.transforms.transform_wrappers.ListTransform
+              base_transform:
+                _target_: omnivision.data.transforms.transform_wrappers.MaskingTransform
+                masking_object:
+                  _target_: omnivision.data.transforms.mask_image_modeling.MaskImageModeling
+                  pred_ratio: 0.95
+                  pred_ratio_var: 0.0
+                  pred_shape:
+                    _target_: omnivision.data.transforms.mask_image_modeling.RandMasking
+                  patch_size: [2,16,16]
+        shuffle: True
+        batch_size: ${int:${divide:${base_batchsize_per_replica},${trainer.data.train.datasets.1.dataset.transforms.0.transforms.0.base_transform.num_times}}}
+        num_workers: 4
+        pin_memory: True
+        drop_last: False
+        collate_fn:
+          _target_: omnivision.data.api.SampleListOmnivoreCollator
+          output_key: voxceleb2
+          batch_kwargs:
+            model_fwd_kwargs:
+              use_checkpoint: True
+        worker_init_fn: NULL
+    val: NULL
+
+  model:
+    _target_: omnivision.models.videomae_pretraining.pretrain_videomae_base_patch16_160
+    pretrained: False #/home/u2022111029/project/omnivicmae/checkpoint-99.pth
+
+  optim:
+    gradient_clip: NULL
+    amp:
+      enabled: True
+      amp_dtype: float16 # bfloat16 or float16
+
+    optimizer:
+      _target_: torch.optim.AdamW
+      betas: [0.9, 0.95]
+    options:
+      lr:
+        - scheduler:
+            _target_: fvcore.common.param_scheduler.CompositeParamScheduler
+            schedulers:
+              - _target_: fvcore.common.param_scheduler.LinearParamScheduler
+                start_value: 1e-6
+                end_value: ${lr}  #1.5e-4  # 8e-4 in orig config
+              - _target_: fvcore.common.param_scheduler.CosineParamScheduler
+                start_value: ${..0.end_value}
+                end_value: 0.0
+            lengths: [0.05, 0.95]  # warm for 40 epochs
+            interval_scaling: ['rescaled', 'fixed']
+      weight_decay:
+        - scheduler:
+            _target_: fvcore.common.param_scheduler.ConstantParamScheduler
+            value: 0.05
+        - scheduler:
+            _target_: fvcore.common.param_scheduler.ConstantParamScheduler
+            value: 0.0
+          param_names:
+              - '*.bias'
+          module_cls_names: ['torch.nn.LayerNorm']
+
+  metrics: NULL
+
+  loss:
+    voxceleb2:
+      _target_: omnivision.losses.mae_loss.MAELoss
+      norm_pix_loss: True
+      norm_pix_per_channel: True
+      patch_size: [2,16,16]
+      unnormalize_img:
+        - [0.485, 0.456, 0.406]
+        - [0.229, 0.224, 0.225]
+      pad_object: 
+        _target_: omnivision.models.PadIm2Video
+        pad_type: repeat
+        ntimes: 2
+    affectnet: ${.voxceleb2}
