@@ -164,6 +164,7 @@ class PathDataset(Dataset, ABC):
         label = self.get_label(idx)
         sample = self.create_sample(idx, data, label, is_success)
         sample = self.apply_transforms(sample)
+
         return sample
 
 
@@ -510,24 +511,3 @@ class VideoPathDatasetDecode(PathDataset):
             return [dummy] * self.clip_sampler._clips_per_video
         return dummy
 
-
-    def __getitem__(self, idx):
-        data, is_success = self.try_load_object(idx)
-        label = self.get_label(idx)
-        sample1 = self.create_sample(idx, data, label, is_success)
-        sample2 = self.create_sample(idx, data, label, is_success)
-        sample1 = self.apply_transforms(sample1)
-        sample2 = self.apply_transforms(sample2)
-        
-        if not isinstance(sample1, list):
-            sample1.vision = torch.cat([sample1.vision, sample2.vision], dim=0)
-            sample1.mask = torch.cat([sample1.mask, sample2.mask], dim=0)
-            return sample1
-        
-        sample=[]
-        for e1, e2 in zip(sample1, sample2):
-            e1.vision = torch.cat([e1.vision, e2.vision], dim=1)
-            e1.mask = torch.cat([e1.mask, e2.mask], dim=1)
-            sample.append(e1)
-            
-        return sample
