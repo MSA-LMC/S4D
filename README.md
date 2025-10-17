@@ -38,6 +38,32 @@ cd pretrain/omnivision &&  OMP_NUM_THREADS=1 HYDRA_FULL_ERROR=1 python train_app
 cd finetune && bash run.sh
 ```
 
+## ✏️ Citation
+
+If you find this work helpful, please consider citing:
+```bibtex
+@ARTICLE{10663980,
+  author={Chen, Yin and Li, Jia and Shan, Shiguang and Wang, Meng and Hong, Richang},
+  journal={IEEE Transactions on Affective Computing}, 
+  title={From Static to Dynamic: Adapting Landmark-Aware Image Models for Facial Expression Recognition in Videos}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-15},
+  keywords={Adaptation models;Videos;Computational modeling;Feature extraction;Transformers;Task analysis;Face recognition;Dynamic facial expression recognition;emotion ambiguity;model adaptation;transfer learning},
+  doi={10.1109/TAFFC.2024.3453443}}
+
+@article{chen2024static,
+  title={Static for Dynamic: Towards a Deeper Understanding of Dynamic Facial Expressions Using Static Expression Data},
+  author={Chen, Yin and Li, Jia and Zhang, Yu and Hu, Zhenzhen and Shan, Shiguang and Wang, Meng and Hong, Richang},
+  journal={IEEE Transactions on Affective Computing}, 
+  doi={10.1109/TAFFC.2025.3623135}}
+}
+
+
+```
+
+
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=MSA-LMC/S4D&type=Date)](https://star-history.com/#MSA-LMC/S4D&Date)
