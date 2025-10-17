@@ -3,10 +3,11 @@
 
 ## 📰 News
 
+**[2025.9.17]** Our previous work [S2D](https://github.com/MSA-LMC/S2D/tree/main) has been recognized as a Highly Cited Paper by Clarivate.
 
-[2025.9.17] The code and pre-trained models are available.
+**[2025.9.17]** The code and pre-trained models are available.
 
-[2025.9.15] The paper is accepted by IEEE Transactions on Affective Computing.
+**[2025.9.15]** The paper is accepted by IEEE Transactions on Affective Computing.
 
 ~~[2024.9.5] Code and pre-trained models will be released here.~~
 
