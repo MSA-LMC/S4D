@@ -7,7 +7,7 @@
 
 **[2025.9.17]** The code and pre-trained models are available.
 
-**[2025.9.15]** The paper is accepted by IEEE Transactions on Affective Computing.
+**[2025.9.15]** The paper is accepted by the IEEE Transactions on Affective Computing.
 
 ~~[2024.9.5] Code and pre-trained models will be released here.~~
 
@@ -20,7 +20,7 @@
 <img width="1024" height="377" alt="image" src="https://github.com/user-attachments/assets/237962f6-4aa8-4855-b7d0-306df5d0ee73" />
 
 
-## Pre-Train and Fine-Tune
+## Pre-Training and Fine-Tune
 1、 Download the pre-trained weights from [Huggingface](https://huggingface.co/cyinen/S4D), and move it to the [finetune/checkpoints/pretrain/voxceleb2+AffectNet] directory.
 
 2、 Run the following command to pre-train or fine-tune the model on the target dataset.
