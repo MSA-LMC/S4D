@@ -44,7 +44,7 @@ do
     echo $OUTPUT_DIR
     # batch_size can be adjusted according to number of GPUs
     CUDA_VISIBLE_DEVICES=$device python \
-        finetune/run_class_finetuning.py \
+        s4d/run_class_finetuning.py \
         --model ${model} \
         --data_set MAFW \
         --nb_classes ${num_labels} \

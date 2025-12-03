@@ -48,7 +48,7 @@ do
 
     # batch_size can be adjusted according to number of GPUs
     CUDA_VISIBLE_DEVICES=$device python \
-        finetune/run_class_finetuning.py \
+        s4d/run_class_finetuning.py \
         --model ${model} \
         --data_set DFEW \
         --nb_classes ${num_labels} \
