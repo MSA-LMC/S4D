@@ -14,7 +14,7 @@ from functools import partial
 from pathlib import Path
 from collections import OrderedDict
 import random
-from unilearn.engine_for_finetuning import train_one_epoch, validation_one_epoch, sfer_validation_one_epoch, final_test, merge
+from s4d.engine_for_finetuning import train_one_epoch, validation_one_epoch, sfer_validation_one_epoch, final_test, merge
 
 
 from utils.mixup import Mixup
@@ -28,7 +28,7 @@ from datasets import build_dataset
 from utils import NativeScalerWithGradNormCount as NativeScaler
 from utils import multiple_samples_collate
 import utils as utils
-import unilearn.videomae
+import s4d.videomae
 
 
 from data.torch_dataset import TorchDataset
@@ -924,3 +924,4 @@ if __name__ == '__main__':
     
     mp.spawn(main, nprocs=opts.nprocs, args=(opts.nprocs, opts, ds_init))
     
+
