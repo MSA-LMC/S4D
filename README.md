@@ -3,6 +3,10 @@
 
 ## 📰 News
 
+**[2026.7.18]** 🎉🎉🚀🚀Our work [S2D](https://github.com/MSA-LMC/S2D/tree/main) was selected as the **2025 Best Paper Award** (the only one!), for **IEEE Transactions on Affective Computing**  by the IEEE Computer Society Publications Board.
+
+<img width="598" height="222" alt="image" src="https://github.com/user-attachments/assets/35775926-b750-428d-a9bf-893e64779941" />
+
 **[2025.9.17]** Our previous work [S2D](https://github.com/MSA-LMC/S2D/tree/main) has been recognized as a Highly Cited Paper by Clarivate.
 
 **[2025.9.17]** The code and pre-trained models are available.
