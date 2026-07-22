@@ -1,4 +1,7 @@
-# [Static for Dynamic: Towards a Deeper Understanding of Dynamic Facial Expressions Using Static Expression Data](https://arxiv.org/pdf/2409.06154)
+# Static for Dynamic: Towards a Deeper Understanding of Dynamic Facial Expressions Using Static Expression Data
+
+[Link to IEEE Xplore](https://ieeexplore.ieee.org/document/11207542), [Link to Arxiv](https://arxiv.org/pdf/2409.06154)
+
 <img width="1024" height="506" alt="image" src="https://github.com/user-attachments/assets/db750330-84e2-4128-96c3-77c4a8fdc76c" />
 
 ## 📰 News
